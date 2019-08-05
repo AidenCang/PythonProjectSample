@@ -27,7 +27,7 @@ class CustomBackend(ModelBackend):
 
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            # user = User.objects.get(Q(username=username) | Q(mobile=username))
+            # user = User.objects.get(Q(email=username) | Q(mobile=username))
             user = User.objects.get(Q(username=username))
             if user.check_password(password):
                 return user
@@ -116,6 +116,7 @@ class CodeViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         username = serializer.validated_data['mobile']
 
         code = self.generate_code()

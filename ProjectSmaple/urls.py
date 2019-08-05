@@ -25,7 +25,7 @@ from users.views import CodeViewSet, UserViewSet, ObtainJSONWebToken, RestPasswd
 router = DefaultRouter()
 router.register(r'codes', CodeViewSet, base_name='codes'),
 router.register(r'users', UserViewSet, base_name='users'),
-router.register(r'resetpasswd', RestPasswd, base_name='users'),
+router.register(r'resetpasswd', RestPasswd, base_name='resetpasswd'),
 
 urlpatterns = [
     path('admin/', admin.site.urls),
