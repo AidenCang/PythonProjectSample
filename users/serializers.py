@@ -40,23 +40,12 @@ class ResetPassWordSerializer(serializers.ModelSerializer):
                                  help_text='验证码')
     username = serializers.CharField(required=True, max_length=50, write_only=True, label='账号',
                                      help_text='账号')
-    type = serializers.CharField(required=True, write_only=True, help_text='注册类型:mobile、email', label='类型')
     password = serializers.CharField(
         style={'input_type': 'password'}, help_text="密码", label="密码", write_only=True,
     )
 
-    def validate_type(self, type):
-        if type == EMAIL or type == MOBILE:
-            return type
-        else:
-            raise serializers.ValidationError("注册类型错误")
-
     def validate_code(self, code):
-        verify_records = None
-        if self.initial_data["type"] == MOBILE:
-            verify_records = VerifyCode.objects.filter(mobile=self.initial_data["username"]).order_by("-add_time")
-        elif self.initial_data["type"] == EMAIL:
-            verify_records = VerifyCode.objects.filter(mobile=self.initial_data["username"]).order_by("-add_time")
+        verify_records = VerifyCode.objects.filter(mobile=self.initial_data["username"]).order_by("-add_time")
         if verify_records:
             last_record = verify_records[0]
 
@@ -75,7 +64,7 @@ class ResetPassWordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('code', 'username', 'type', 'password')
+        fields = ('code', 'username',  'password')
 
 
 # 序列化器处理多一个字段和少一个字段
@@ -134,8 +123,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate_email(self, email):
         # 电话号码不为空，才验证
-        if not email and re.match(REGEX_EMAIL, email) is None:
-            raise serializers.ValidationError('电话号码错误!!!!')
+        if email and re.match(REGEX_EMAIL, email) is None:
+            raise serializers.ValidationError('邮件格式错误!!!!')
         return email
 
     def create(self, validated_data):
@@ -151,21 +140,26 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class CodeSerializer(serializers.Serializer):
     mobile = serializers.CharField(max_length=50, help_text='电话号码或邮箱', label='电话号码或邮箱')
+    code_type = serializers.CharField(required=False, max_length=50, help_text='register,None', label='后期验证码类型')
 
     def validate_mobile(self, mobile):
-        # 验证是不是手机号和邮件
-        if not re.match(REGEX_EMAIL, mobile) and not re.match(REGEX_MOBILE, mobile):
-            raise serializers.ValidationError('用户名不是邮箱或者电话号码')
+        codetype = self.initial_data['code_type']
 
-        # 使用电话号码注册
-        if not re.match(REGEX_EMAIL, mobile):
-            if User.objects.filter(mobile=mobile).count():
-                raise serializers.ValidationError('用户已存在!!!!')
+        if codetype == "register":  # 只有注册才能去验证用户是否存在
 
-        # 使用邮件注册
-        if not re.match(REGEX_EMAIL, mobile):
-            if User.objects.filter(email=mobile).count():
-                raise serializers.ValidationError('用户已存在!!!!')
+            # 验证是不是手机号和邮件
+            if not re.match(REGEX_EMAIL, mobile) and not re.match(REGEX_MOBILE, mobile):
+                raise serializers.ValidationError('用户名不是邮箱或者电话号码')
+
+            # 使用电话号码注册
+            if not re.match(REGEX_EMAIL, mobile):
+                if User.objects.filter(mobile=mobile).count():
+                    raise serializers.ValidationError('用户已存在!!!!')
+
+            # 使用邮件注册
+            if not re.match(REGEX_EMAIL, mobile):
+                if User.objects.filter(email=mobile).count():
+                    raise serializers.ValidationError('用户已存在!!!!')
 
         # 验证码时间
         one_minites_age = datetime.now() - timedelta(hours=0, minutes=0, seconds=10);
@@ -175,3 +169,7 @@ class CodeSerializer(serializers.Serializer):
         # 验证完成之后开始发送短信
 
         return mobile
+
+    # def validate(self, attrs):
+    #     del attrs['code_type']
+    #     return attrs
