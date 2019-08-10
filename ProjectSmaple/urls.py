@@ -36,4 +36,6 @@ urlpatterns = [
     url(r'^obtain_jwt_auth/', ObtainJSONWebToken.as_view()),
     url(r'^refresh_jwt_token/', ObtainJSONWebToken.as_view()),
     url(r'^verify_jwt_token/', ObtainJSONWebToken.as_view()),
+    # channels
+    path('channels/', include('channelsApp.urls')),
 ]

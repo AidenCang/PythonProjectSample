@@ -40,6 +40,16 @@ AUTHENTICATION_BACKENDS = (
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 REGEX_EMAIL = r'^\w+@(\w+\.)+(com|cn|net)$'
 
+ASGI_APPLICATION = "ProjectSmaple.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,6 +61,9 @@ INSTALLED_APPS = [
     'rest_framework',
     # 添加token认证方式
     # 'rest_framework.authtoken'
+    # 添加websocket
+    'channels',
+    'channelsApp.apps.ChannelsappConfig',
 ]
 
 MIDDLEWARE = [
@@ -147,7 +160,6 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
 }
-
 
 # 配置发送邮件
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
