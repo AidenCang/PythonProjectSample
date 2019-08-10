@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import LoginView
 from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from rest_framework_jwt.views import obtain_jwt_token
-
+from channelsApp import views
 from users.views import CodeViewSet, UserViewSet, ObtainJSONWebToken, RestPasswd
 
 router = DefaultRouter()
@@ -38,4 +39,7 @@ urlpatterns = [
     url(r'^verify_jwt_token/', ObtainJSONWebToken.as_view()),
     # channels
     path('channels/', include('channelsApp.urls')),
+    path('chat/', views.index),
+    path('accounts/login/', LoginView.as_view()),
+    path('accounts/logout/', logout),
 ]

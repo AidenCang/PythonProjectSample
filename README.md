@@ -9,11 +9,41 @@ ASGI也被设计为WSGI的超集，并且在两者之间有一种定义的转换
 [AWSGI](https://asgi.readthedocs.io/en/latest/)
 
 # Channels通道
+核心类(两大类同步和异步):
+1.同步类型:
+
+    class WebsocketConsumer(SyncConsumer):
+    class JsonWebsocketConsumer(WebsocketConsumer):
+    
+2.异步类型
+
+    class AsyncWebsocketConsumer(AsyncConsumer):
+    class AsyncJsonWebsocketConsumer(AsyncWebsocketConsumer):
+
 [Channels](https://github.com/andrewgodwin/channels-examples)
 
 # django-websocket-redis
 [django-websocket-redis](https://github.com/jrief/django-websocket-redis)
 
 
+## 异常类的使用
+类路径:
+venv/lib/python3.7/site-packages/channels/exceptions.py
+
+class RequestAborted(Exception):
+class RequestTimeout(RequestAborted):
+class InvalidChannelLayerError(ValueError):
+class AcceptConnection(Exception):
+class DenyConnection(Exception):
+class ChannelFull(Exception):
+class MessageTooLarge(Exception):
+class StopConsumer(Exception):
+
+
 # Django认证系统
 # Django会话系统
+
+# websocket 开发调试工具
+
+https://www.npmjs.com/package/wscat
+http://coolaf.com:1010/tool/chattest

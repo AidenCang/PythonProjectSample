@@ -39,7 +39,8 @@ AUTHENTICATION_BACKENDS = (
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 REGEX_EMAIL = r'^\w+@(\w+\.)+(com|cn|net)$'
-
+##### Channels-specific settings
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
 ASGI_APPLICATION = "ProjectSmaple.routing.application"
 CHANNEL_LAYERS = {
     'default': {
@@ -49,6 +50,37 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+##### Project-specific settings
+
+NOTIFY_USERS_ON_ENTER_OR_LEAVE_ROOMS = True
+
+MSG_TYPE_MESSAGE = 0  # For standard messages
+MSG_TYPE_WARNING = 1  # For yellow messages
+MSG_TYPE_ALERT = 2  # For red & dangerous alerts
+MSG_TYPE_MUTED = 3  # For just OK information that doesn't bother users
+MSG_TYPE_ENTER = 4  # For just OK information that doesn't bother users
+MSG_TYPE_LEAVE = 5  # For just OK information that doesn't bother users
+
+MESSAGE_TYPES_CHOICES = (
+    (MSG_TYPE_MESSAGE, 'MESSAGE'),
+    (MSG_TYPE_WARNING, 'WARNING'),
+    (MSG_TYPE_ALERT, 'ALERT'),
+    (MSG_TYPE_MUTED, 'MUTED'),
+    (MSG_TYPE_ENTER, 'ENTER'),
+    (MSG_TYPE_LEAVE, 'LEAVE'),
+)
+
+MESSAGE_TYPES_LIST = [
+    MSG_TYPE_MESSAGE,
+    MSG_TYPE_WARNING,
+    MSG_TYPE_ALERT,
+    MSG_TYPE_MUTED,
+    MSG_TYPE_ENTER,
+    MSG_TYPE_LEAVE,
+]
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -137,8 +169,12 @@ USE_TZ = False  # 默认是Ture，时间是utc时间，由于我们要用本地�
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+
 REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     # 'PAGE_SIZE': 10
@@ -154,6 +190,9 @@ REST_FRAMEWORK = {
     # 'AutoSchema' object has no attribute 'get_link' 不添加下面的内容会报错
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
+
+
+LOGIN_REDIRECT_URL = "/"
 
 # 配置JWT
 JWT_AUTH = {
